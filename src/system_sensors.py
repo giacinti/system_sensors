@@ -343,9 +343,9 @@ def check_settings(settings):
     # if "deviceName" not in settings:
     #     write_message_to_console("deviceName not defined in settings.yaml! Please check the documentation")
     #     sys.exit()
-    if "client_id" not in settings:
-        write_message_to_console("client_id not defined in settings.yaml! Please check the documentation")
-        sys.exit()
+    # if "client_id" not in settings:
+    #     write_message_to_console("client_id not defined in settings.yaml! Please check the documentation")
+    #     sys.exit()
     if "power_integer_state" in settings:
         write_message_to_console("power_integer_state is deprecated please remove this option power state is now a binary_sensor!")
 
@@ -698,15 +698,18 @@ if __name__ == "__main__":
     DEFAULT_TIME_ZONE = timezone(settings["timezone"])
     if "update_interval" in settings:
         WAIT_TIME_SECONDS = settings["update_interval"]
-    mqttClient = mqtt.Client(client_id=settings["client_id"])
-    mqttClient.on_connect = on_connect                      #attach function to callback
-    mqttClient.on_message = on_message
     if "deviceName" in settings:
         deviceName = settings["deviceName"].replace(" ", "").lower()
         deviceNameDisplay = settings["deviceName"]
     else:
         deviceName = get_host_name()
         deviceNameDisplay = deviceName
+    client_id = deviceName + "_mqtt"
+    if "client_id" in settings:
+        client_id = settings["client_id"]
+    mqttClient = mqtt.Client(client_id)
+    mqttClient.on_connect = on_connect                      #attach function to callback
+    mqttClient.on_message = on_message
     mqttClient.will_set(f"system-sensors/sensor/{deviceName}/availability", "offline", retain=True)
     if "user" in settings["mqtt"]:
         mqttClient.username_pw_set(
