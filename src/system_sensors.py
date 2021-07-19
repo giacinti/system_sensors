@@ -156,7 +156,10 @@ def get_temp():
         reading = check_output(["vcgencmd", "measure_temp"]).decode("UTF-8")
         temp = str(findall("\d+\.\d+", reading)[0])
     else:
-        reading = check_output(["cat", "/sys/class/thermal/thermal_zone0/temp"]).decode("UTF-8")
+        dev = "/sys/class/thermal/thermal_zone0/temp"
+        if "thermal_device" in settings and settings["thermal_device"]:
+            dev = settings["thermal_device"]
+        reading = check_output(["cat", dev]).decode("UTF-8")
         temp = str(reading[0] + reading[1] + "." + reading[2])
     return temp
 
@@ -216,7 +219,10 @@ def get_wifi_ssid():
     return (ssid)
 
 def get_rpi_power_status():
-    return _underVoltage.get()
+    ret = False;
+    if _underVoltage is not None:
+        ret = _underVoltage.get()
+    return ret
 
 def get_host_name():
     return socket.gethostname()
@@ -334,9 +340,9 @@ def check_settings(settings):
     if "timezone" not in settings:
         write_message_to_console("Timezone not defined in settings.yaml! Please check the documentation")
         sys.exit()
-    if "deviceName" not in settings:
-        write_message_to_console("deviceName not defined in settings.yaml! Please check the documentation")
-        sys.exit()
+    # if "deviceName" not in settings:
+    #     write_message_to_console("deviceName not defined in settings.yaml! Please check the documentation")
+    #     sys.exit()
     if "client_id" not in settings:
         write_message_to_console("client_id not defined in settings.yaml! Please check the documentation")
         sys.exit()
@@ -695,8 +701,12 @@ if __name__ == "__main__":
     mqttClient = mqtt.Client(client_id=settings["client_id"])
     mqttClient.on_connect = on_connect                      #attach function to callback
     mqttClient.on_message = on_message
-    deviceName = settings["deviceName"].replace(" ", "").lower()
-    deviceNameDisplay = settings["deviceName"]
+    if "deviceName" in settings:
+        deviceName = settings["deviceName"].replace(" ", "").lower()
+        deviceNameDisplay = settings["deviceName"]
+    else:
+        deviceName = get_host_name()
+        deviceNameDisplay = deviceName
     mqttClient.will_set(f"system-sensors/sensor/{deviceName}/availability", "offline", retain=True)
     if "user" in settings["mqtt"]:
         mqttClient.username_pw_set(
@@ -709,8 +719,12 @@ if __name__ == "__main__":
     else:
         mqttClient.connect(settings["mqtt"]["hostname"], 1883)
     try:
-        remove_old_topics()
-        send_config_message(mqttClient)
+        send_config = True;
+        if "send_config" in settings:
+            send_config = settings["send_config"]
+        if send_config:
+            remove_old_topics()
+            send_config_message(mqttClient)
     except:
         write_message_to_console("something whent wrong")
     _underVoltage = new_under_voltage()
