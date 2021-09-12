@@ -12,3 +12,7 @@ etc...
 2) create & push multi-arch manifest
 docker manifest create <registry>/system-monitors:latest <registry>/system-monitors-amd64:latest <registry>/system-monitors-armv7:latest
 docker manifest push <registry>/system-monitors:latest
+
+
+3) run
+docker run -d --name system_sensors --restart=unless-stopped -v /etc/system_sensors:/etc/config/system_sensors:ro --pid host --network host <registry>/system_sensors:latest
