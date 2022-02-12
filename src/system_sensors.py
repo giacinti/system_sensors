@@ -506,6 +506,8 @@ def send_config_message(mqttClient):
                 + f"\"name\":\"{deviceNameDisplay} Under Voltage\","
                 + f"\"state_topic\":\"system-sensors/sensor/{deviceName}/state\","
                 + '"value_template":"{{value_json.power_status}}",'
+                + f"\"payload_on\":\"True\","
+        	+ f"\"payload_off\":\"False\","
                 + f"\"unique_id\":\"{deviceName}_sensor_power_status\","
                 + f"\"availability_topic\":\"system-sensors/sensor/{deviceName}/availability\","
                 + f"\"device\":{{\"identifiers\":[\"{deviceName}_sensor\"],"
