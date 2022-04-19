@@ -417,6 +417,7 @@ def send_config_message(mqttClient):
         topic=f"homeassistant/sensor/{deviceName}/load_1m/config",
         payload=f"{{\"name\":\"{deviceNameDisplay} Load 1m\","
                 + f"\"state_topic\":\"system-sensors/sensor/{deviceName}/state\","
+                + '"state_class":"measurement",'
                 + '"value_template":"{{value_json.load_1m}}",'
                 + f"\"unique_id\":\"{deviceName}_sensor_load_1m\","
                 + f"\"availability_topic\":\"system-sensors/sensor/{deviceName}/availability\","
@@ -431,6 +432,7 @@ def send_config_message(mqttClient):
         topic=f"homeassistant/sensor/{deviceName}/load_5m/config",
         payload=f"{{\"name\":\"{deviceNameDisplay} Load 5m\","
                 + f"\"state_topic\":\"system-sensors/sensor/{deviceName}/state\","
+                + '"state_class":"measurement",'
                 + '"value_template":"{{value_json.load_5m}}",'
                 + f"\"unique_id\":\"{deviceName}_sensor_load_5m\","
                 + f"\"availability_topic\":\"system-sensors/sensor/{deviceName}/availability\","
@@ -445,6 +447,7 @@ def send_config_message(mqttClient):
         topic=f"homeassistant/sensor/{deviceName}/load_15m/config",
         payload=f"{{\"name\":\"{deviceNameDisplay} Load 15m\","
                 + f"\"state_topic\":\"system-sensors/sensor/{deviceName}/state\","
+                + '"state_class":"measurement",'        
                 + '"value_template":"{{value_json.load_15m}}",'
                 + f"\"unique_id\":\"{deviceName}_sensor_load_15m\","
                 + f"\"availability_topic\":\"system-sensors/sensor/{deviceName}/availability\","
